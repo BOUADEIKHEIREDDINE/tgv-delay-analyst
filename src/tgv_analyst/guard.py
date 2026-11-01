@@ -6,13 +6,26 @@ check_answer() before showing an answer, whatever the model says.
 
 import re
 
-# Matches 12, 12.5 and 12,5 (French decimal comma). The sign is ignored.
-NUMBER_PATTERN = re.compile(r"\d+(?:[.,]\d+)?")
+# A comma followed by exactly 3 digits is a thousands separator: 12,792 or 1,234,567.5
+THOUSANDS_PATTERN = re.compile(r"\d{1,3}(?:,\d{3})+(?:\.\d+)?(?!\d)")
+# Matches 12,792 (thousands) first, otherwise 12, 12.5 and 12,5 (French decimal comma).
+# The sign is ignored.
+NUMBER_PATTERN = re.compile(THOUSANDS_PATTERN.pattern + r"|\d+(?:[.,]\d+)?")
 
 
 def extract_numbers(text):
-    """Return the numbers written in a text, as strings with a "." decimal point."""
-    return [match.replace(",", ".") for match in NUMBER_PATTERN.findall(text)]
+    """Return the numbers written in a text, as strings with a "." decimal point.
+
+    "12,792" -> "12792" (thousands separator), "12,5" -> "12.5" (decimal comma).
+    Limit: "12,500" is always read as twelve thousand five hundred, never as 12.5.
+    """
+    numbers = []
+    for match in NUMBER_PATTERN.findall(text):
+        if THOUSANDS_PATTERN.fullmatch(match):
+            numbers.append(match.replace(",", ""))
+        else:
+            numbers.append(match.replace(",", "."))
+    return numbers
 
 
 def is_supported(number, known_numbers):
@@ -37,3 +50,30 @@ def check_answer(answer, tool_outputs, question=""):
 
     unsupported = [n for n in extract_numbers(answer) if not is_supported(n, known_numbers)]
     return len(unsupported) == 0, unsupported
+
+
+# Code the model may not run: anything that writes files or reaches the system.
+# Changes to `df` are lost anyway (separate process), but files on disk are not.
+FORBIDDEN_CODE = [
+    "open(",
+    "to_csv",
+    "to_excel",
+    "to_json",
+    "to_parquet",
+    "to_pickle",
+    "import os",
+    "from os",
+    "shutil",
+    "subprocess",
+]
+
+
+def check_code(code):
+    """Check the code sent to run_python before it runs.
+
+    Returns (ok, forbidden_parts_found).
+    Limit: this is a text search, so a determined user could hide a forbidden
+    call; it stops the model from writing files by mistake.
+    """
+    found = [part for part in FORBIDDEN_CODE if part in code]
+    return len(found) == 0, found

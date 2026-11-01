@@ -6,6 +6,7 @@ import sys
 import pandas as pd
 
 from tgv_analyst.config import CLEAN_CSV, PROJECT_ROOT
+from tgv_analyst.guard import check_code
 from tgv_analyst.stats import confidence_interval as wilson_interval
 
 TIMEOUT_SECONDS = 30
@@ -50,6 +51,11 @@ def run_python(code):
     The code runs in a separate process with a time limit. Only what it
     prints is returned, so the model must print() its results.
     """
+    # Brick 3: refuse code that writes files, before running anything.
+    ok, found = check_code(code)
+    if not ok:
+        return f"Error: forbidden in code: {', '.join(found)}. Only read and compute, never write files."
+
     prelude = (
         "import pandas as pd\n"
         f"df = pd.read_csv({str(CLEAN_CSV)!r})\n"
@@ -96,9 +102,11 @@ def confidence_interval(late, total, level=0.95):
         rate, low, high = wilson_interval(late, total, level)
     except ValueError as error:
         return f"Error: {error}"
+    # Also printed in %, so the model never converts numbers itself (the guard would reject them).
     return (
-        f"rate: {rate:.4f}\n"
-        f"{level:.0%} confidence interval: [{low:.4f}, {high:.4f}]"
+        f"rate: {rate:.4f} ({rate * 100:.1f} %)\n"
+        f"{level:.0%} confidence interval: [{low:.4f}, {high:.4f}] "
+        f"([{low * 100:.1f} %, {high * 100:.1f} %])"
     )
 
 
