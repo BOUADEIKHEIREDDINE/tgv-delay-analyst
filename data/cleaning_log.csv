@@ -1,0 +1,10 @@
+step,rule,rows_affected
+drop_comment_columns,"Dropped the 3 free-text comment columns (2 fully empty, 1 95% empty)",0
+remove_impossible_rows,Removed rows with 0 planned trains or more cancellations than planned trains (COVID 2020),73
+fix_broken_sup30,Set nb_train_retard_sup_30 to missing when negative or smaller than nb_train_retard_sup_60,354
+fix_negative_delays,Set negative average delays of late trains to missing (averages over all trains can be negative: early trains),10
+fix_copied_sup15_average,Set retard_moyen_trains_retard_sup15 to missing when below 15 min or identical to retard_moyen_tous_trains_arrivee (copied value),2183
+fix_empty_causes,Set delay causes to missing when all 6 cause percentages are 0,199
+merge_service_duplicates,"Merged National and International rows of the same route and month (counts added, averages weighted by trains)",84
+convert_dates,Converted date (YYYY-MM text) to year and month columns,12792
+add_derived_columns,"Added nb_circules, taux_retard_arrivee, taux_annulation and seuil_retard (SNCF late threshold)",12792

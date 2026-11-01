@@ -1,0 +1,17 @@
+# Python
+.venv/
+__pycache__/
+*.pyc
+.pytest_cache/
+.ipynb_checkpoints/
+
+# Secrets (copy .env.example to .env)
+.env
+
+# Data: re-created by scripts/download_data.py and scripts/clean_data.py
+data/raw/
+data/clean/
+
+# Personal notes (local only)
+not to forget.md
+tomorrow is today.md
