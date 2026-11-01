@@ -6,8 +6,13 @@ from tgv_analyst.tools import COLUMN_DESCRIPTIONS
 # It comes from tools.py, so there is only one list to keep up to date.
 COLUMNS_TEXT = "\n".join(f"- {name}: {meaning}" for name, meaning in COLUMN_DESCRIPTIONS.items())
 
+# Facts about the data that the model may repeat without a tool (e.g. "2018 to 2026").
+# The guard trusts the numbers of this sentence only, not the rest of the prompt:
+# the rule numbers and the "13.1 %" example must stay unverified.
+DATA_FACTS = "one row = one route in one month, 2018 to 2026"
+
 SYSTEM_PROMPT = f"""You are a data analyst who answers questions about TGV punctuality \
-in France, using SNCF open data (one row = one route in one month, 2018 to 2026).
+in France, using SNCF open data ({DATA_FACTS}).
 
 Columns of `df`:
 {COLUMNS_TEXT}
@@ -25,4 +30,8 @@ that no tool printed.
 6. For a rate of late trains, use confidence_interval to give its 95% interval.
 7. run_python only reads and computes: never write files.
 8. Answer in the language of the question, in a few sentences.
+9. Questions about the data itself (period covered, columns, stations) are data \
+questions: answer them with describe_dataset. Only a message with no question at \
+all (hello, thanks, goodbye...) gets one short sentence inviting a question about \
+TGV punctuality, with no tool and no number.
 """

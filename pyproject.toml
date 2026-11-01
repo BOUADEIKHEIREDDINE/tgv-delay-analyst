@@ -1,0 +1,20 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "tgv-analyst"
+version = "0.1.0"
+description = "Ask questions about TGV punctuality: a local LLM harness where every number comes from code."
+requires-python = ">=3.11"
+dependencies = ["pandas==3.1.0", "rich==15.0.0", "textual==8.2.8"]
+
+[project.optional-dependencies]
+test = ["pytest==9.2.0"]
+
+# `pip install -e .` creates the `tgv` command, which runs tgv_analyst.cli.main().
+[project.scripts]
+tgv = "tgv_analyst.cli:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]

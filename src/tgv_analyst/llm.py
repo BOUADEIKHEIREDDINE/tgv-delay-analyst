@@ -8,6 +8,7 @@ import json
 import os
 import time
 import urllib.error
+import urllib.parse
 import urllib.request
 
 # Settings come from environment variables (see .env.example), with defaults for Ollama.
@@ -64,3 +65,25 @@ def chat(messages, tools=None, think=False):
         "usage": data.get("usage", {}),
         "seconds": round(time.time() - start, 2),
     }
+
+
+def endpoint():
+    """Host and port of the model server, e.g. "localhost:11434" (never the key)."""
+    return urllib.parse.urlparse(BASE_URL).netloc
+
+
+def ping(timeout):
+    """Time in seconds for a tiny request to the server (list of models).
+
+    Returns None if the server does not answer within `timeout` seconds.
+    """
+    request = urllib.request.Request(f"{BASE_URL}/models")
+    if API_KEY:
+        request.add_header("Authorization", f"Bearer {API_KEY}")
+    start = time.time()
+    try:
+        with urllib.request.urlopen(request, timeout=timeout) as response:
+            response.read()
+    except (urllib.error.URLError, TimeoutError, OSError):
+        return None
+    return round(time.time() - start, 3)
