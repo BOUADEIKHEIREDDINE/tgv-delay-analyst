@@ -24,4 +24,4 @@ tomorrow is today.md
 build/
 
 # Saved conversations of the app (personal, not part of the project)
-conversations/
+/conversations/

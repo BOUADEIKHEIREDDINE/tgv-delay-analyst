@@ -25,7 +25,7 @@ from tgv_analyst.prompts import DATA_FACTS, SYSTEM_PROMPT
 from tgv_analyst.stats import confidence_interval as wilson_interval
 from tgv_analyst.tools import TOOL_SCHEMAS, call_tool
 
-MAX_TURNS = 8  # model calls per question, including the retry after a rejection
+MAX_TURNS = 10  # model calls per question, including the retry after a rejection
 TRACE_FILE = PROJECT_ROOT / "traces" / "traces.jsonl"
 GUARD_ENABLED = True  # the guard always runs: there is no option to turn it off
 
@@ -200,6 +200,12 @@ def run_agent(question, think=True, max_turns=MAX_TURNS, trace_file=TRACE_FILE, 
                     "seconds": tool_seconds,
                 })
             steps.append(step)
+            continue
+
+        if not content.strip():
+            # With thinking on, the model sometimes stops with an empty reply: ask it to go on.
+            steps.append(step)
+            messages.append({"role": "user", "content": "Your reply was empty. Call a tool or write your answer."})
             continue
 
         # No tool call: this is the model's final answer. Brick 3: check it in code.

@@ -6,8 +6,9 @@ check_answer() before showing an answer, whatever the model says.
 
 import re
 
-# A comma followed by exactly 3 digits is a thousands separator: 12,792 or 1,234,567.5
-THOUSANDS_PATTERN = re.compile(r"\d{1,3}(?:,\d{3})+(?:\.\d+)?(?!\d)")
+# A comma or a space followed by exactly 3 digits is a thousands separator:
+# 12,792 or 1,234,567.5, and the French 6 704 (normal or no-break space).
+THOUSANDS_PATTERN = re.compile(r"\d{1,3}(?:[, \u00a0\u202f]\d{3})+(?:\.\d+)?(?!\d)")
 # Matches 12,792 (thousands) first, otherwise 12, 12.5 and 12,5 (French decimal comma).
 # The sign is ignored.
 NUMBER_PATTERN = re.compile(THOUSANDS_PATTERN.pattern + r"|\d+(?:[.,]\d+)?")
@@ -16,13 +17,13 @@ NUMBER_PATTERN = re.compile(THOUSANDS_PATTERN.pattern + r"|\d+(?:[.,]\d+)?")
 def extract_numbers(text):
     """Return the numbers written in a text, as strings with a "." decimal point.
 
-    "12,792" -> "12792" (thousands separator), "12,5" -> "12.5" (decimal comma).
+    "12,792" and "12 792" -> "12792" (thousands separator), "12,5" -> "12.5" (decimal comma).
     Limit: "12,500" is always read as twelve thousand five hundred, never as 12.5.
     """
     numbers = []
     for match in NUMBER_PATTERN.findall(text):
         if THOUSANDS_PATTERN.fullmatch(match):
-            numbers.append(match.replace(",", ""))
+            numbers.append(re.sub(r"[, \u00a0\u202f]", "", match))
         else:
             numbers.append(match.replace(",", "."))
     return numbers
