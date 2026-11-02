@@ -25,7 +25,7 @@ Last update: 2026-11-02
 
 ## Also left
 
-- `EVIDENCE.md` empty: one section per brick (what is shown, files, reproduce command)
+- ✅ `EVIDENCE.md`: one section per brick (what is shown, files, real trace excerpts, reproduce commands, expected result)
 
 ## Order (decided 2026-11-02, one by one)
 
@@ -37,7 +37,7 @@ Last update: 2026-11-02
 6. ✅ Brick 1 — real Qwen traces committed with the benchmark (`benchmark/traces/system.jsonl`)
 7. ✅ `README.md` + `Modelfile` + fresh-clone test (all steps OK). Also from the test: copy/paste and mouse selection in the app, source labels fixed
 8. ✅ R3 — full exports of all sessions + `journal.md` (refresh the 11-02 export at the very end)
-9. ⏳ `EVIDENCE.md` — one section per brick, written so a teacher sees each brick working and proved (what is shown, files, command)
+9. ✅ `EVIDENCE.md` — 5 sections; includes the guard catching 5 wrong numbers live in the benchmark (all corrected on the second chance)
 10. ⏳ R4 — rehearse the defense
 
 Decided + done: "national" questions are answered; the permanent limits line says a sum over routes is not SNCF's official rate (option 1, data/RULES.md rule 2).
