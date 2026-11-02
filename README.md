@@ -1,15 +1,15 @@
 # TGV Delay Analyst
 
 Ask questions about the punctuality of French high-speed trains (TGV) in plain
-English or French — *"Quel est le taux de retard de Paris Lyon vers Marseille en 2024 ?"* —
-and get an answer where **every number was computed by code** on SNCF open data.
+English or French, and get an answer where **every number was computed by code** on SNCF
+open data. Example: *"Quel est le taux de retard de Paris Lyon vers Marseille en 2024 ?"*
 
 A small local model (Qwen3.5-4B) cannot be trusted with numbers on its own. This
 project is the harness around it: tools that compute on the data, a system prompt
 with the real column names, and a guard that blocks any answer containing a number
 that no tool printed.
 
-Final project, *Coding for AI & Data Science* (PGE3, 2026–2027). Bricks 1, 3, 6, 8, 9 —
+Final project, *Coding for AI & Data Science* (PGE3, 2026–2027). Bricks 1, 3, 6, 8, 9:
 see [EVIDENCE.md](EVIDENCE.md) for the proof of each one.
 
 ## Model

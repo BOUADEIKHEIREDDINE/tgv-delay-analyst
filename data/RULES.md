@@ -1,4 +1,4 @@
-# Data rules — where each cleaning decision comes from
+# Data rules: where each cleaning decision comes from
 
 Brick 6 asks for at least one rule that the data file itself does not say, taken
 from a person or a document, with its source named. Rules 1 and 2 come from SNCF's
@@ -13,7 +13,7 @@ The CSV file we download (`scripts/download_data.py`) contains none of this text
 
 ---
 
-## Rule 1 — When is a TGV late? (SNCF definition)
+## Rule 1: When is a TGV late? (SNCF definition)
 
 Quoted from the source:
 
@@ -46,7 +46,7 @@ train by its own trip, which we cannot see.
 
 ---
 
-## Rule 2 — Route figures must not be added up (SNCF warning)
+## Rule 2: Route figures must not be added up (SNCF warning)
 
 Quoted from the same source:
 
@@ -63,7 +63,7 @@ this dataset and is not SNCF's official national rate. This is part of the
 
 ---
 
-## Rule 3 — Our other cleaning decisions and where they come from
+## Rule 3: Our other cleaning decisions and where they come from
 
 Every step of `scripts/clean_data.py`, with the number of rows it touched on the real
 file in `data/cleaning_log.csv`.

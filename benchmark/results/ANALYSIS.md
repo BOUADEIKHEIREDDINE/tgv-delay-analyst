@@ -26,7 +26,7 @@ equal to the truth. A's 6 "right" answers, read one by one:
 
 | Task | Run | What A said | Really right? |
 |---|---|---|---|
-| 12 (worst full year: 2018) | 1, 2, 3 | "2022", "2021", "2023" — it only repeated "2018" from the range in the question | no (3 false positives) |
+| 12 (worst full year: 2018) | 1, 2, 3 | "2022", "2021", "2023": it only repeated "2018" from the range in the question | no (3 false positives) |
 | 3 (late share: 12.0 %) | 3 | "likely between 8 % and 12 %" | no (a guess, the 12 matches by chance) |
 | 11 (late threshold: 5 min) | 2 | "late if it arrives more than 5 minutes after its scheduled time" | yes (the SNCF rule is public) |
 | 11 | 3 | discusses several definitions, "1 to 5 minutes" | unclear |
@@ -38,7 +38,7 @@ in `is_correct()`: an answer listing many numbers can be right by luck.
 
 ## One failure of the system, explained from its trace
 
-**Task 4, run 2** — *"Quel est le taux de retard à l'arrivée de Lyon Part Dieu à Marseille
+**Task 4, run 2**: *"Quel est le taux de retard à l'arrivée de Lyon Part Dieu à Marseille
 St Charles en juillet 2025 ?"* (truth: 27.7 %). Status `max_turns`: no answer after 10 turns.
 Trace: line with `"timestamp": "2026-11-02T18:50:22"` in `traces/system.jsonl`.
 
@@ -52,7 +52,7 @@ What happened, turn by turn:
    code prints "Aucune donnée trouvée pour cette route", then crashes on a variable that
    was never set (`NameError`).
 2. **Turns 2–3.** It calls `describe_dataset`, sees that the names are in capitals, and
-   fixes them — **but keeps the same filter without parentheses**. Still empty, still
+   fixes them: **but keeps the same filter without parentheses**. Still empty, still
    "no data". No error this time, so nothing tells it the filter is wrong.
 3. **Turns 4–10.** It concludes the route may not exist in July 2025 and explores: lists
    stations, dates, routes. It even prints that the route exists (628 rows from LYON PART

@@ -10,7 +10,7 @@ Qwen3.5-4B (local, Ollama).
 
 ---
 
-## 2026-10-31 — project setup, data, cleaning plan
+## 2026-10-31: project setup, data, cleaning plan
 
 **How I worked.** I chose the topic (TGV delay analyst) and the 5 bricks, gave the
 project structure (I pasted the folder tree), and set the rule for the rest of the
@@ -30,7 +30,7 @@ because the guard only accepts numbers printed by a tool. Noted first in my to-d
 
 ---
 
-## 2026-11-01 (morning) — cleaning validated, model installed, tools tested, LLM client
+## 2026-11-01 (morning): cleaning validated, model installed, tools tested, LLM client
 
 **Kept as is.**
 - `scripts/clean_data.py` after my check in the notebook (notebook deleted after).
@@ -47,7 +47,7 @@ because the guard only accepts numbers printed by a tool. Noted first in my to-d
 
 ---
 
-## 2026-11-01 (afternoon) — agent loop, `tgv` command, full-screen app
+## 2026-11-01 (afternoon): agent loop, `tgv` command, full-screen app
 
 **How I worked.** For `agent.py` and `main.py` I asked for the exact plan first and coded
 only after my validation. For the interface I wrote the prompts myself (`prompt ui.md`,
@@ -63,14 +63,14 @@ then a second prompt for one visual style and a pixel-art TGV).
 
 ---
 
-## 2026-11-02 — tuning, tests, rules, brick 8, benchmark, README
+## 2026-11-02: tuning, tests, rules, brick 8, benchmark, README
 
 **Prompt rewritten (`prompts.py`), measured on one question (Paris Lyon → Marseille St Charles 2024):
 0/3 correct before, 10/10 after.**
-- Rule 2: call `describe_dataset` when a station is named — Qwen guessed names like 'PARIS GARE DE LYON'.
-- Rule 3: each `run_python` call starts from scratch, never type numbers from an earlier output, put parentheses around each filter condition — Qwen lost turns on `NameError` and on `df[a == x & b == y]`.
-- Rules 6–7: late rate = `nb_train_retard_arrivee / nb_circules`; `confidence_interval` is a tool, not a Python function — Qwen used planned trains and called it inside `run_python`.
-- Rule 2 again: I removed the station names from the examples — Qwen copied 'PARIS MONTPARNASSE' into its code instead of the station asked.
+- Rule 2: call `describe_dataset` when a station is named: Qwen guessed names like 'PARIS GARE DE LYON'.
+- Rule 3: each `run_python` call starts from scratch, never type numbers from an earlier output, put parentheses around each filter condition: Qwen lost turns on `NameError` and on `df[a == x & b == y]`.
+- Rules 6–7: late rate = `nb_train_retard_arrivee / nb_circules`; `confidence_interval` is a tool, not a Python function: Qwen used planned trains and called it inside `run_python`.
+- Rule 2 again: I removed the station names from the examples: Qwen copied 'PARIS MONTPARNASSE' into its code instead of the station asked.
 
 **Rejected after measuring.** Asking Qwen to copy the "what the data can't conclude" sentence
 from the tool output: it did it 0 times out of 5. Replaced by a fixed line written in code,

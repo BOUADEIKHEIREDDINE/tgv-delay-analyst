@@ -1,4 +1,4 @@
-# EVIDENCE — TGV Delay Analyst
+# EVIDENCE: TGV Delay Analyst
 
 One section per brick: what is shown, the files, the command that reproduces it, and
 what you should see. Bricks: **1, 3, 6, 8, 9**. Model: Qwen3.5-4B Q4_K_M, local (Ollama),
@@ -12,7 +12,7 @@ python -m pytest            # expected: 287 passed
 
 ---
 
-## Brick 1 — Own tool
+## Brick 1: Own tool
 
 **What is shown.** Three Python functions I wrote, that Qwen calls through tool calling
 in my own loop (`agent.py`): `run_python` (runs Qwen's pandas code on the clean data in a
@@ -34,7 +34,7 @@ print(f"Nombre total de TGV circulant de Paris Est à Strasbourg en 2022: {total
 ```
 
 The tool returned `Nombre total de TGV circulant de Paris Est à Strasbourg en 2022: 6673`
-(plus the 12 monthly values), and the answer was *"En 2022, 6 673 TGV ont circulé…"* —
+(plus the 12 monthly values), and the answer was *"En 2022, 6 673 TGV ont circulé…"*:
 the true value. The same trace also shows a failed call coming back to Qwen as an error
 (`NameError: name 'result' is not defined`: each call starts from scratch) and Qwen fixing it.
 
@@ -46,7 +46,7 @@ python -m pytest tests/test_tools.py -v                                # the too
 
 ---
 
-## Brick 3 — A rule enforced by code
+## Brick 3: A rule enforced by code
 
 **What is shown.** The rule: *the system never shows an answer containing a number that
 no tool printed.* It is enforced in `agent.py` by `guard.check_answer()`, whatever the model
@@ -58,7 +58,7 @@ files (`guard.check_code()` refuses `to_csv`, `open(`, `import os`… before run
 `tests/test_guard.py`, `tests/test_agent.py`.
 
 **Tests that try to break the rule and get blocked.**
-- `tests/test_guard.py`: real Qwen answers — "9,55 %" and "9,6 %" (it converted 0.0955 itself),
+- `tests/test_guard.py`: real Qwen answers: "9,55 %" and "9,6 %" (it converted 0.0955 itself),
   an invented "700 trains", an answer with no tool call, the "13.1 %" example of the prompt,
   and forbidden code (`df.to_csv('copy.csv')`, `open(...)`, `import os`) → all blocked.
 - `tests/test_agent.py::test_invented_number_is_blocked_end_to_end`: a fake Qwen answers
@@ -70,8 +70,8 @@ files (`guard.check_code()` refuses `to_csv`, `open(`, `import os`… before run
 
 **Live, in the benchmark.** The guard rejected an answer 5 times out of 36 runs and the
 second chance fixed it each time, for example (`benchmark/traces/system.jsonl`):
-- `2026-11-02T19:56:03`: Qwen wrote "6 683 TGV" — the tool had printed 6673 → rejected → corrected.
-- `2026-11-02T18:45:40`: Qwen wrote "11,8 %" — the tool had printed 12.0 % → rejected → corrected.
+- `2026-11-02T19:56:03`: Qwen wrote "6 683 TGV": the tool had printed 6673 → rejected → corrected.
+- `2026-11-02T18:45:40`: Qwen wrote "11,8 %": the tool had printed 12.0 % → rejected → corrected.
 
 **Reproduce.**
 ```bash
@@ -83,7 +83,7 @@ To see a test fail when the rule is broken: in `guard.py`, remove `"to_csv",` fr
 
 ---
 
-## Brick 6 — Dirty data, written decisions
+## Brick 6: Dirty data, written decisions
 
 **What is shown.** Real open data (SNCF, *Régularité mensuelle TGV par liaisons*, 12,907 rows)
 cleaned by my script in 9 logged steps (12,907 → 12,792 rows), and two rules the file does
@@ -124,7 +124,7 @@ On a fresh clone (2026-11-02) a new download gave exactly the counts above.
 
 ---
 
-## Brick 8 — Numbers with their uncertainty
+## Brick 8: Numbers with their uncertainty
 
 **What is shown.** (1) Every late rate comes with a **95 % confidence interval** (Wilson),
 computed by the `confidence_interval` tool. (2) A **sentence on what the data cannot
@@ -145,7 +145,7 @@ confiance à 95 % de [8,9 %, 10,3 %]."* (640 late trains out of 6,704.)
 (only monthly shares of broad causes per route); whether a given train will be late; an
 official national rate (routes overlap, SNCF warns against adding them up); and the interval
 itself treats trains as independent, while trains of the same day share weather, strikes
-and works — the real uncertainty is wider.
+and works: the real uncertainty is wider.
 
 **Reproduce.**
 ```bash
@@ -156,7 +156,7 @@ In the app the interval is drawn as a bar under the tool result; the limits line
 
 ---
 
-## Brick 9 — Measured comparison
+## Brick 9: Measured comparison
 
 **What is shown.** My system (Qwen + harness) against my model alone (Qwen, the question
 only), on 12 questions whose answer is computed separately with pandas, 3 runs each,
