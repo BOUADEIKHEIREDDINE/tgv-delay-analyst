@@ -236,3 +236,17 @@ def test_ctrl_b_hides_and_shows_the_panel():
         await pilot.press("ctrl+b")
         assert sidebar.display
     run(scenario)
+
+
+def test_data_limits_always_under_the_question_box():
+    """Brick 8: what the data can't conclude, shown once like "Claude can make mistakes",
+    not inside the answers (so never under a greeting or a goodbye)."""
+    async def scenario(app, pilot):
+        limits = app.query_one("#limits")
+        assert str(limits.render()) == ui.DATA_LIMITS
+        assert limits.region.y > app.query_one(QuestionBox).region.y  # below the box
+        app.query_one(QuestionBox).insert("How many rows?")
+        await pilot.press("enter")
+        await wait_for(pilot, lambda: not app.busy and "verified answer" in history_text(app))
+        assert "why trains were late" not in history_text(app)  # not repeated in the answer
+    run(scenario)

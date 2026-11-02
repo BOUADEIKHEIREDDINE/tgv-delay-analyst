@@ -6,7 +6,7 @@ Layout, from top to bottom:
 - a status line: the thinking spinner while Qwen works;
 - the question box, always at the bottom: multi-line, mouse selection,
   delete a selection, \\ + Enter for a new line;
-- a hint line;
+- a hint line, then the data limits (brick 8, like "Claude can make mistakes");
 - on the right, the panel (sidebar.py): session, conversations, starters.
 
 Conversations are saved in conversations/ (conversations.py) and can be
@@ -121,6 +121,7 @@ class TgvApp(App):
     }}
     QuestionBox:focus {{ border: round {theme.ACCENT}; }}
     #hint {{ height: 1; padding: 0 2; color: {theme.MUTED}; }}
+    #limits {{ height: auto; padding: 0 2; color: {theme.MUTED}; text-style: italic; }}
     """
 
     BINDINGS = [
@@ -157,6 +158,7 @@ class TgvApp(App):
                 yield Static(id="status")
                 yield QuestionBox(placeholder=PLACEHOLDER, highlight_cursor_line=False, id="question")
                 yield Static(HINT, id="hint")
+                yield Static(ui.DATA_LIMITS, id="limits")  # brick 8, always visible
             yield Sidebar(id="sidebar")
 
     def on_mount(self):

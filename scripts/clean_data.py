@@ -189,7 +189,7 @@ def convert_dates(df):
 
 
 def late_threshold(duration):
-    # SNCF rule (see docs/sncf_rule.md): a train is late from 5 min under 1h30,
+    # SNCF rule (see data/RULES.md): a train is late from 5 min under 1h30,
     # 10 min from 1h30 to 3h, 15 min over 3h.
     if duration < 90:
         return 5

@@ -334,3 +334,20 @@ def test_banner_does_not_touch_the_top():
     display = ui.Display(console=ui.make_console(plain=True, file=output, width=100), plain=True)
     display.show_startup(make_status(), think=True)
     assert output.getvalue().startswith("\n" * ui.TOP_MARGIN)
+
+
+def test_data_limits_printed_once_after_the_banner():
+    """Line-by-line and one-question modes: brick 8 limits once, after the banner."""
+    output = io.StringIO()
+    display = ui.Display(console=ui.make_console(plain=True, file=output, width=200), plain=True)
+    display.show_startup(make_status(), think=True)
+    text = output.getvalue()
+    assert text.count(ui.DATA_LIMITS) == 1
+    assert text.index("Model thinking") < text.index(ui.DATA_LIMITS)
+
+
+def test_data_limits_text():
+    """The two limits of data/RULES.md, and no number."""
+    assert "why trains were late" in ui.DATA_LIMITS
+    assert "not SNCF's official national rate" in ui.DATA_LIMITS  # RULES.md, rule 2
+    assert not any(char.isdigit() for char in ui.DATA_LIMITS)

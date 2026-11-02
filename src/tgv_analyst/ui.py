@@ -65,6 +65,13 @@ PROMPT_MARK = "› "  # inside the question box, on the first line
 CONTINUE_MARK = "  "  # same width, on the next lines
 NEW_LINE_KEY = "\\"  # a line ending with \ continues on a new line (like Claude Code)
 PROMPT_HINT = "enter send · \\ + enter new line · /help · /quit"
+# Brick 8: what the data can't conclude (sources: data/RULES.md). Shown once, like
+# "Claude can make mistakes": under the question box in the app, after the banner
+# in the line-by-line modes. Written in code, not by the model, so it's always right.
+DATA_LIMITS = (
+    "Monthly totals per route: they don't say why trains were late, or whether your "
+    "train will be. A sum over routes is not SNCF's official national rate."
+)
 TOP_MARGIN = 4  # blank lines above the banner, so the train doesn't touch the top
 PLAIN_PROMPT = "Question > "
 
@@ -697,6 +704,7 @@ class Display:
             self.block(board(status, width, plain=self.plain))
         mode = "on" if think else "off"
         self.block(Text(f"Model thinking: {mode} · /help for the commands", style=theme.MUTED))
+        self.block(Text(DATA_LIMITS, style=f"italic {theme.MUTED}"))
 
     def show_status(self, status):
         """/status: the board and the arrival badge again, without animation."""
