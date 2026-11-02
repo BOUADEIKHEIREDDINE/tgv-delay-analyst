@@ -16,7 +16,8 @@ from pathlib import Path
 MAX_TOOL_INPUT = 3000
 MAX_TOOL_OUTPUT = 1500
 REMINDER = re.compile(r"<system-reminder>.*?</system-reminder>", re.DOTALL)
-EMAIL = re.compile(r"[\w.+-]+@[\w-]+\.[\w.]+|bouadikheireddine@?")  # also the address's name part
+# A full address, or a name part alone ("name@" followed by no domain, e.g. inside a grep pattern).
+EMAIL = re.compile(r"[\w.+-]+@[\w-]+\.[\w.]+|[\w.+-]+@(?![\w-])")
 HOME = re.compile(r"/home/[\w.-]+")
 
 

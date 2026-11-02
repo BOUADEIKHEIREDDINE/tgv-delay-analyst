@@ -13,6 +13,7 @@ spec.loader.exec_module(export)
 def test_clean_removes_reminders_and_personal_data():
     text = "hi <system-reminder>secret memory</system-reminder> mail me: someone@example.com, /home/alice/x"
     assert export.clean(text) == "hi  mail me: [email], ~/x"
+    assert export.clean("grep -E 'someone@|api_key'") == "grep -E '[email]|api_key'"  # name part alone
 
 
 def test_shorten():
