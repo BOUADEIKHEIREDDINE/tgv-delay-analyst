@@ -342,3 +342,16 @@ def test_check_startup_data_missing(monkeypatch):
     monkeypatch.setattr(agent, "CLEAN_CSV", SMALL_CSV.parent / "missing.csv")
     status = agent.check_startup()
     assert status.data_ok is False and status.n_rows is None
+
+
+def test_sources_prefer_the_most_recent_tool_call():
+    """Real case of 2026-11-02: "12.0 %" came from confidence_interval (call 3), but
+    describe_dataset (call 1) prints "month number (1-12)" and 12 rounds to 12.0."""
+    outputs = {
+        1: "Columns:\n- month: month number (1-12)",
+        2: "Late trains: 1385\nTotal trains that ran: 11554",
+        3: "rate: 0.1199 (12.0 %)\n95% confidence interval: [0.1141, 0.1259] ([11.4 %, 12.6 %])",
+    }
+    answer = "In 2023, 12.0 % arrived late, between 11.4 % and 12.6 % (1,385 out of 11,554)."
+    sources = agent.find_sources(answer, "late share in 2023?", outputs)
+    assert sources == {"12.0": 3, "11.4": 3, "12.6": 3, "1,385": 2, "11,554": 2}

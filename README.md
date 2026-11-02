@@ -80,7 +80,7 @@ Questions to try:
 python -m pytest
 ```
 
-283 tests, about 15 s. They need neither the model nor the downloaded data: the model
+284 tests, about 15 s. They need neither the model nor the downloaded data: the model
 is replaced by a fake that replays real Qwen replies, and the data by small files in
 `tests/fixtures/`.
 

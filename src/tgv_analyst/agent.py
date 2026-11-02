@@ -100,8 +100,10 @@ def interval_event(arguments):
 
 
 def find_sources(answer, question, outputs):
-    """For each number written in the answer, the first tool call that printed it.
+    """For each number written in the answer, the most recent tool call that printed it.
 
+    Most recent first: the answer uses the latest results, and an early output can hold
+    the same number by chance (describe_dataset prints "1-12", which matches "12.0").
     outputs: {call_id: tool output}. Numbers that come from the question get no source.
     Uses the same rounding rule as the guard, so a source exists for every accepted number.
     """
@@ -111,7 +113,7 @@ def find_sources(answer, question, outputs):
         number = extract_numbers(written)[0]
         if is_supported(number, from_question):
             continue
-        for call_id, output in outputs.items():
+        for call_id, output in reversed(outputs.items()):
             if is_supported(number, extract_numbers(output, spaces=False)):
                 sources[written] = call_id
                 break
