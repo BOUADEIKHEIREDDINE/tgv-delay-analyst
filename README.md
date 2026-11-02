@@ -80,21 +80,23 @@ Questions to try:
 python -m pytest
 ```
 
-284 tests, about 15 s. They need neither the model nor the downloaded data: the model
+287 tests, about 15 s. They need neither the model nor the downloaded data: the model
 is replaced by a fake that replays real Qwen replies, and the data by small files in
 `tests/fixtures/`.
 
 ## Benchmark (brick 9)
 
 ```bash
-python benchmark/run_benchmark.py             # 12 questions × 3 runs × 2 systems (~3 h)
+python benchmark/run_benchmark.py             # 12 questions × 3 runs × 2 systems (2 h 35 min here)
 python benchmark/run_benchmark.py --runs 1    # one run each
 python benchmark/run_benchmark.py --summary   # rebuild the table from results.csv
 ```
 
 Qwen alone against Qwen + this harness, on questions whose answer is computed
-separately with pandas. Results: `benchmark/results/summary.md`; traces of every run:
-`benchmark/traces/`.
+separately with pandas. Result (2026-11-02): **Qwen alone 17 % ± 8 %** of answers right
+(and fewer when read by hand), **Qwen + harness 97 % ± 5 %**. Table: `benchmark/results/summary.md`;
+analysis and one failure explained from its trace: `benchmark/results/ANALYSIS.md`;
+traces of every run: `benchmark/traces/`.
 
 ## How it works
 
