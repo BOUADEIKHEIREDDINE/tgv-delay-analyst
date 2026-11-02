@@ -92,6 +92,14 @@ class QuestionBox(TextArea):
             return
         await super()._on_key(event)
 
+    def action_paste(self):
+        """Ctrl+V pastes the app's own clipboard (text copied inside the app). The system
+        clipboard can't be read by a terminal app: the terminal sends it on ctrl+shift+v."""
+        if self.app.clipboard:
+            super().action_paste()
+        else:
+            self.app.notify(ui.PASTE_TIP, timeout=4)
+
 
 class TgvApp(App):
     """Full-screen app. `startup` and `agent` can be replaced in tests (no model needed)."""

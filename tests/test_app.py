@@ -250,3 +250,39 @@ def test_data_limits_always_under_the_question_box():
         await wait_for(pilot, lambda: not app.busy and "verified answer" in history_text(app))
         assert "why trains were late" not in history_text(app)  # not repeated in the answer
     run(scenario)
+
+
+def test_ctrl_v_with_empty_app_clipboard_shows_how_to_paste(monkeypatch):
+    """A terminal app can't read the system clipboard: Ctrl+V explains the terminal's paste key."""
+    notices = []
+
+    async def scenario(app, pilot):
+        monkeypatch.setattr(app, "notify", lambda message, **kwargs: notices.append(message))
+        app.query_one(QuestionBox).focus()
+        await pilot.press("ctrl+v")
+        assert notices == [ui.PASTE_TIP]
+        assert app.query_one(QuestionBox).text == ""
+    run(scenario)
+
+
+def test_ctrl_v_pastes_text_copied_inside_the_app():
+    async def scenario(app, pilot):
+        app.copy_to_clipboard("Paris Lyon")
+        box = app.query_one(QuestionBox)
+        box.focus()
+        await pilot.press("ctrl+v")
+        assert box.text == "Paris Lyon"
+    run(scenario)
+
+
+def test_terminal_paste_goes_into_the_question_box():
+    """Ctrl+Shift+V: the terminal sends the clipboard as a paste event."""
+    from textual import events
+
+    async def scenario(app, pilot):
+        box = app.query_one(QuestionBox)
+        box.focus()
+        app.post_message(events.Paste("Taux de retard 2024 ?"))  # like the terminal: to the app
+        await pilot.pause()
+        assert box.text == "Taux de retard 2024 ?"
+    run(scenario)

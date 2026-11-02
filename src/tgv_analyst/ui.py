@@ -92,6 +92,14 @@ COMMANDS = [
     ("/quit", "quit (also Ctrl-D)"),
 ]
 
+# Copy and paste go through the terminal, not the app: a terminal app can't read the
+# system clipboard, and it captures the mouse (Shift makes the terminal select instead).
+KEYS = [
+    ("shift + drag", "select text (then ctrl+shift+c copies it)"),
+    ("ctrl+shift+v", "paste into the question box"),
+]
+PASTE_TIP = "Paste with ctrl+shift+v (the terminal's paste)"
+
 STATUS_WORDS = {"ok": "verified answer", "rejected": "blocked answer", "max_turns": "unfinished"}
 
 # Pixel-art train, one character per pixel, two pixel rows per terminal line.
@@ -593,10 +601,12 @@ def render_log(rows):
 
 
 def render_help():
-    """Table of the REPL commands."""
+    """Table of the REPL commands, then the copy and paste keys."""
     table = Table(box=None, show_header=False, padding=(0, 2))
     for command, meaning in COMMANDS:
         table.add_row(Text(command, style=f"bold {theme.ACCENT}"), meaning)
+    for keys, meaning in KEYS:
+        table.add_row(Text(keys, style=theme.MUTED), meaning)
     return table
 
 

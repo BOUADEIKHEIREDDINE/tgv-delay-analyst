@@ -351,3 +351,9 @@ def test_data_limits_text():
     assert "why trains were late" in ui.DATA_LIMITS
     assert "not SNCF's official national rate" in ui.DATA_LIMITS  # RULES.md, rule 2
     assert not any(char.isdigit() for char in ui.DATA_LIMITS)
+
+
+def test_help_lists_the_copy_and_paste_keys():
+    text = render(ui.render_help())
+    assert "shift + drag" in text and "ctrl+shift+c" in text
+    assert "ctrl+shift+v" in text

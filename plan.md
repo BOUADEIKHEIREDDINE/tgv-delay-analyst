@@ -9,7 +9,7 @@ Last update: 2026-11-02
 | | Status | Done | Left |
 |---|---|---|---|
 | **R1** fresh clone runs from README | 🟡 | `requirements.txt` (pinned), `.venv`, `scripts/download_data.py` + `clean_data.py`, `tgv` command, `.env.example`, no secrets in git | `README.md` empty: title, setup commands, Ollama/model setup, how to run. Test on a real fresh clone |
-| **R2** known-answer pytest, fresh clone | ✅ | 272 tests pass, every file of our code has tests (UI, app, conversations, **guard: 46, stats: 21, tools: 26, cleaning: 26, agent: 29** — fake model replaying real Qwen replies, **llm: 17** — fake network, **cli: 25, download_data: 4**); fixtures `tests/fixtures/tgv_small.csv` (3 clean rows) + `tgv_raw_small.csv` (9 raw rows, one anomaly each) | Check on a real fresh clone (with README, step 5) |
+| **R2** known-answer pytest, fresh clone | ✅ | 276 tests pass, every file of our code has tests (UI, app, conversations, **guard: 46, stats: 21, tools: 26, cleaning: 26, agent: 29** — fake model replaying real Qwen replies, **llm: 17** — fake network, **cli: 25, download_data: 4**); fixtures `tests/fixtures/tgv_small.csv` (3 clean rows) + `tgv_raw_small.csv` (9 raw rows, one anomaly each) | Check on a real fresh clone (with README, step 5) |
 | **R3** `ai_log/` | 🟡 | Conversation logs 10-31, 11-01 (morning), 11-02; `.gitignore` fixed so `ai_log/conversations/` is committed | `journal.md` empty (yours to write: kept / corrected / rewritten, per session). 11-01 afternoon session (agent, UI, English) not logged |
 | **R4** oral defense | ⏳ | — | Rehearse the demo; be able to explain any file (agent.py, guard.py, tools.py first) |
 
