@@ -40,6 +40,19 @@ def test_extract_numbers(text, expected):
     assert extract_numbers(text) == expected
 
 
+@pytest.mark.parametrize(
+    "text, expected",
+    [
+        ("15 150\n", ["15", "150"]),  # print(late, total): two numbers, not 15150
+        ("Late trains: 640 / ran: 6704", ["640", "6704"]),
+        ("12,792", ["12792"]),  # a comma is still a thousands separator (f"{n:,}")
+        ("0.0955 (9.5 %)", ["0.0955", "9.5"]),
+    ],
+)
+def test_extract_numbers_from_tool_output_space_is_not_thousands(text, expected):
+    assert extract_numbers(text, spaces=False) == expected
+
+
 def test_limit_comma_with_three_digits_is_always_thousands():
     """Known limit (written in the docstring of extract_numbers): "12,500" is never 12.5."""
     assert extract_numbers("12,500") == ["12500"]
@@ -85,6 +98,14 @@ def test_correct_answer_with_french_thousands_passes():
         "Le taux est de 9,5 %, entre 8,9 % et 10,3 %."
     )
     assert check_answer(answer, TOOL_OUTPUTS, QUESTION) == (True, [])
+
+
+def test_two_numbers_printed_on_one_line_pass():
+    """Bug found by test_agent.py (2026-11-02): run_python printed "15 150" (print(late, total))
+    and the guard read it as 15150, so the correct answer "15 sur 150" was blocked."""
+    answer = "10.0 % des trains étaient en retard (15 sur 150)."
+    outputs = ["15 150\n", "rate: 0.1000 (10.0 %)"]
+    assert check_answer(answer, outputs) == (True, [])
 
 
 def test_numbers_from_the_question_and_data_facts_pass():

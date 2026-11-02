@@ -94,7 +94,7 @@ def main():
     # One question: normal screen, so the answer stays in the terminal after exit.
     if args.question:
         status = start(display, think)
-        if ui.classify_arrival(status) is ui.Arrival.SUPPRIME:
+        if ui.classify_arrival(status) is ui.Arrival.CANCELLED:
             return 1  # the banner already shows what to fix
         ask(display, args.question, think)
         return 0

@@ -112,7 +112,7 @@ def find_sources(answer, question, outputs):
         if is_supported(number, from_question):
             continue
         for call_id, output in outputs.items():
-            if is_supported(number, extract_numbers(output)):
+            if is_supported(number, extract_numbers(output, spaces=False)):
                 sources[written] = call_id
                 break
     return sources
@@ -186,7 +186,7 @@ def run_agent(question, think=True, max_turns=MAX_TURNS, trace_file=TRACE_FILE, 
                 emit(on_event, ToolResult(
                     call_id=call_id,
                     output=result,
-                    numbers=[float(n) for n in extract_numbers(result)],
+                    numbers=[float(n) for n in extract_numbers(result, spaces=False)],
                     error=failed,
                 ))
                 if name == "confidence_interval" and not failed:

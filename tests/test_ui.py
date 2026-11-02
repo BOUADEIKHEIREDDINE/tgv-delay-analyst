@@ -53,7 +53,7 @@ def test_classify_arrival_cancelled():
     assert ui.classify_arrival(make_status(data_ok=False)) is ui.Arrival.CANCELLED
 
 
-# 2. SUPPRIME shows the command that fixes the problem
+# 2. CANCELLED shows the command that fixes the problem
 def test_cancelled_server_down_shows_server_command():
     text = render(ui.frame(ui.TRAIN_ANIM_S, make_status(server_ok=False), 100))
     assert "Cancelled" in text

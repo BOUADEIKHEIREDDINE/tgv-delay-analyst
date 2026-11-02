@@ -6,23 +6,34 @@ check_answer() before showing an answer, whatever the model says.
 
 import re
 
-# A comma or a space followed by exactly 3 digits is a thousands separator:
-# 12,792 or 1,234,567.5, and the French 6 704 (normal or no-break space).
+# In text written by the model or a person, a comma or a space followed by exactly
+# 3 digits is a thousands separator: 12,792 or 1,234,567.5, and the French 6 704
+# (normal or no-break space).
 THOUSANDS_PATTERN = re.compile(r"\d{1,3}(?:[, \u00a0\u202f]\d{3})+(?:\.\d+)?(?!\d)")
 # Matches 12,792 (thousands) first, otherwise 12, 12.5 and 12,5 (French decimal comma).
 # The sign is ignored.
 NUMBER_PATTERN = re.compile(THOUSANDS_PATTERN.pattern + r"|\d+(?:[.,]\d+)?")
 
+# In tool output, a space is never a thousands separator: print(15, 150) gives
+# "15 150", two numbers. Only the comma counts (Python prints f"{n:,}" as 12,792).
+TOOL_THOUSANDS_PATTERN = re.compile(r"\d{1,3}(?:,\d{3})+(?:\.\d+)?(?!\d)")
+TOOL_NUMBER_PATTERN = re.compile(TOOL_THOUSANDS_PATTERN.pattern + r"|\d+(?:[.,]\d+)?")
 
-def extract_numbers(text):
+
+def extract_numbers(text, spaces=True):
     """Return the numbers written in a text, as strings with a "." decimal point.
 
     "12,792" and "12 792" -> "12792" (thousands separator), "12,5" -> "12.5" (decimal comma).
+    spaces=False for tool output: "15 150" -> "15", "150".
     Limit: "12,500" is always read as twelve thousand five hundred, never as 12.5.
     """
+    if spaces:
+        thousands, number = THOUSANDS_PATTERN, NUMBER_PATTERN
+    else:
+        thousands, number = TOOL_THOUSANDS_PATTERN, TOOL_NUMBER_PATTERN
     numbers = []
-    for match in NUMBER_PATTERN.findall(text):
-        if THOUSANDS_PATTERN.fullmatch(match):
+    for match in number.findall(text):
+        if thousands.fullmatch(match):
             numbers.append(re.sub(r"[, \u00a0\u202f]", "", match))
         else:
             numbers.append(match.replace(",", "."))
@@ -47,7 +58,7 @@ def check_answer(answer, tool_outputs, question=""):
     """
     known_numbers = extract_numbers(question)
     for output in tool_outputs:
-        known_numbers += extract_numbers(output)
+        known_numbers += extract_numbers(output, spaces=False)
 
     unsupported = [n for n in extract_numbers(answer) if not is_supported(n, known_numbers)]
     return len(unsupported) == 0, unsupported

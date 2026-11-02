@@ -1,0 +1,11 @@
+﻿date;service;gare_depart;gare_arrivee;duree_moyenne;nb_train_prevu;nb_annulation;commentaire_annulation;nb_train_depart_retard;retard_moyen_depart;retard_moyen_tous_trains_depart;commentaire_retards_depart;nb_train_retard_arrivee;retard_moyen_arrivee;retard_moyen_tous_trains_arrivee;commentaires_retard_arrivee;nb_train_retard_sup_15;retard_moyen_trains_retard_sup15;nb_train_retard_sup_30;nb_train_retard_sup_60;prct_cause_externe;prct_cause_infra;prct_cause_gestion_trafic;prct_cause_materiel_roulant;prct_cause_gestion_gare;prct_cause_prise_en_charge_voyageurs
+2024-01;National;PARIS LYON;MARSEILLE ST CHARLES;196;100;0;;12;10.0;1.2;;10;20.0;2.0;;4;25.0;2;1;30.0;20.0;10.0;20.0;10.0;10.0
+2024-02;National;PARIS LYON;MARSEILLE ST CHARLES;196;60;10;;8;12.0;1.5;;5;22.0;1.8;"Mouvement social
+sur la ligne";2;30.0;1;0;30.0;20.0;10.0;20.0;10.0;10.0
+2020-04;National;PARIS NORD;LILLE;62;0;0;;0;0.0;0.0;;0;0.0;0.0;;0;0.0;0;0;0.0;0.0;0.0;0.0;0.0;0.0
+2025-01;National;PARIS EST;STRASBOURG;110;200;0;;20;9.0;1.0;;18;19.0;2.5;;6;28.0;-3;2;30.0;20.0;10.0;20.0;10.0;10.0
+2019-03;National;NANTES;PARIS MONTPARNASSE;130;150;0;;15;-2.0;-0.5;;12;18.0;-1.0;;3;22.0;1;0;30.0;20.0;10.0;20.0;10.0;10.0
+2018-05;National;LYON PART DIEU;MARSEILLE ST CHARLES;100;40;0;;4;8.0;0.8;;6;15.0;1.5;;1;1.5;0;0;30.0;20.0;10.0;20.0;10.0;10.0
+2021-06;National;RENNES;PARIS MONTPARNASSE;90;80;0;;5;7.0;0.5;;4;16.0;0.8;;1;20.0;0;0;0.0;0.0;0.0;0.0;0.0;0.0
+2025-07;National;PARIS LYON;GENEVE;200;100;0;;10;10.0;1.0;;10;20.0;2.0;;4;30.0;2;1;30.0;20.0;10.0;20.0;10.0;10.0
+2025-07;International;PARIS LYON;GENEVE;230;50;0;;10;16.0;4.0;;5;26.0;5.0;;2;36.0;1;0;60.0;20.0;10.0;0.0;10.0;0.0
