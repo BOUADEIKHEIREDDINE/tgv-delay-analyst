@@ -1,0 +1,74 @@
+[
+  {
+    "id": 1,
+    "question": "How many different routes (departure station -> arrival station) are in the TGV punctuality dataset?",
+    "kind": "count",
+    "truth": "df.groupby(['gare_depart', 'gare_arrivee']).ngroups"
+  },
+  {
+    "id": 2,
+    "question": "Quel est le taux de retard à l'arrivée de Paris Lyon vers Marseille St Charles en 2024 ?",
+    "kind": "rate",
+    "truth": "late_rate(df[route('PARIS LYON', 'MARSEILLE ST CHARLES') & (df['year'] == 2024)])"
+  },
+  {
+    "id": 3,
+    "question": "What share of TGV trains from Paris Montparnasse to Bordeaux St Jean arrived late in 2023?",
+    "kind": "rate",
+    "truth": "late_rate(df[route('PARIS MONTPARNASSE', 'BORDEAUX ST JEAN') & (df['year'] == 2023)])"
+  },
+  {
+    "id": 4,
+    "question": "Quel est le taux de retard à l'arrivée de Lyon Part Dieu à Marseille St Charles en juillet 2025 ?",
+    "kind": "rate",
+    "truth": "late_rate(df[route('LYON PART DIEU', 'MARSEILLE ST CHARLES') & (df['year'] == 2025) & (df['month'] == 7)])"
+  },
+  {
+    "id": 5,
+    "question": "What share of all TGV trains arrived late in 2024?",
+    "kind": "rate",
+    "truth": "late_rate(df[df['year'] == 2024])"
+  },
+  {
+    "id": 6,
+    "question": "How many TGV trains were cancelled in 2023, all routes together?",
+    "kind": "count",
+    "truth": "df[df['year'] == 2023]['nb_annulation'].sum()"
+  },
+  {
+    "id": 7,
+    "question": "Combien de TGV ont circulé de Paris Est à Strasbourg en 2022 ?",
+    "kind": "count",
+    "truth": "df[route('PARIS EST', 'STRASBOURG') & (df['year'] == 2022)]['nb_circules'].sum()"
+  },
+  {
+    "id": 8,
+    "question": "What was the cancellation rate of TGV trains from Paris Lyon to Nice Ville in 2024?",
+    "kind": "rate",
+    "truth": "cancel_rate(df[route('PARIS LYON', 'NICE VILLE') & (df['year'] == 2024)])"
+  },
+  {
+    "id": 9,
+    "question": "How many TGV trains were more than 60 minutes late in 2024, all routes together?",
+    "kind": "count",
+    "truth": "df[df['year'] == 2024]['nb_train_retard_sup_60'].sum()"
+  },
+  {
+    "id": 10,
+    "question": "Quel est le taux de retard à l'arrivée des TGV de Paris Gare de Lyon à Marseille en 2023 ?",
+    "kind": "rate",
+    "truth": "late_rate(df[route('PARIS LYON', 'MARSEILLE ST CHARLES') & (df['year'] == 2023)])"
+  },
+  {
+    "id": 11,
+    "question": "From how many minutes of delay is a TGV from Paris Nord to Lille counted as late?",
+    "kind": "count",
+    "truth": "df[route('PARIS NORD', 'LILLE')]['seuil_retard'].max()"
+  },
+  {
+    "id": 12,
+    "question": "Which full year between 2018 and 2025 had the highest share of TGV trains arriving late?",
+    "kind": "count",
+    "truth": "yearly_late_rates(df[df['year'] <= 2025]).idxmax()"
+  }
+]

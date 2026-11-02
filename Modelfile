@@ -1,0 +1,5 @@
+# Qwen3.5-4B Q4_K_M with a 16K-token context (the project's model, see README).
+#   ollama pull qwen3.5:4b-q4_K_M
+#   ollama create qwen3.5-4b-16k -f Modelfile
+FROM qwen3.5:4b-q4_K_M
+PARAMETER num_ctx 16384
