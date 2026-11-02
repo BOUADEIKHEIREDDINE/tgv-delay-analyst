@@ -26,7 +26,7 @@ project: the project is built file by file, I say what to write and validate it 
 - I asked for a notebook copy of `clean_data.py` to check each cleaning function cell by cell before validating it.
 
 **Prompt rule added.** Qwen must compute every number inside `run_python` (including percentages),
-because the guard only accepts numbers printed by a tool. Written in `not to forget.md`, then in `prompts.py`.
+because the guard only accepts numbers printed by a tool. Noted first in my to-do notes, then written in `prompts.py`.
 
 ---
 

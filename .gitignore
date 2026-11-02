@@ -12,12 +12,8 @@ __pycache__/
 data/raw/
 data/clean/
 
-# Agent traces (benchmark traces in benchmark/traces/ are kept)
-traces/
-
-# Personal notes (local only)
-not to forget.md
-tomorrow is today.md
+# Agent traces of the app (the benchmark traces in benchmark/traces/ are kept)
+/traces/
 
 # Packaging (pip install -e .)
 *.egg-info/
