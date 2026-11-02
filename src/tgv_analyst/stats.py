@@ -21,4 +21,5 @@ def confidence_interval(successes, total, level=0.95):
     denominator = 1 + z**2 / total
     center = (p + z**2 / (2 * total)) / denominator
     margin = z * sqrt(p * (1 - p) / total + z**2 / (4 * total**2)) / denominator
-    return p, max(0.0, center - margin), min(1.0, center + margin)
+    # min/max: float rounding can put a bound a hair past the rate (e.g. 2.8e-17 for 0 / 10).
+    return p, min(p, max(0.0, center - margin)), max(p, min(1.0, center + margin))
