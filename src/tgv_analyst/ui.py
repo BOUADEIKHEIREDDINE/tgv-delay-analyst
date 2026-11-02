@@ -14,6 +14,7 @@ Order of the file:
 """
 
 import argparse
+import io
 import os
 import random
 import re
@@ -92,12 +93,18 @@ COMMANDS = [
     ("/quit", "quit (also Ctrl-D)"),
 ]
 
-# Copy and paste go through the terminal, not the app: a terminal app can't read the
-# system clipboard, and it captures the mouse (Shift makes the terminal select instead).
-KEYS = [
-    ("shift + drag", "select text (then ctrl+shift+c copies it)"),
-    ("ctrl+shift+v", "paste into the question box"),
+# Copy and paste. Line-by-line mode: the terminal does it (its own keys).
+TERMINAL_KEYS = [
+    ("drag", "select text (then ctrl+shift+c copies it)"),
+    ("ctrl+shift+v", "paste"),
 ]
+# Full-screen app: the app selects (drag to the top or bottom edge to scroll) and copies.
+APP_KEYS = [
+    ("drag", "select text (drag to the top or bottom edge to scroll)"),
+    ("ctrl+c", "copy the selection"),
+    ("ctrl+shift+v", "paste from outside the app"),
+]
+# A terminal app can't read the system clipboard: the terminal sends it on its paste key.
 PASTE_TIP = "Paste with ctrl+shift+v (the terminal's paste)"
 
 STATUS_WORDS = {"ok": "verified answer", "rejected": "blocked answer", "max_turns": "unfinished"}
@@ -600,12 +607,12 @@ def render_log(rows):
     return table
 
 
-def render_help():
-    """Table of the REPL commands, then the copy and paste keys."""
+def render_help(keys=TERMINAL_KEYS):
+    """Table of the commands, then the copy and paste keys (the app passes APP_KEYS)."""
     table = Table(box=None, show_header=False, padding=(0, 2))
     for command, meaning in COMMANDS:
         table.add_row(Text(command, style=f"bold {theme.ACCENT}"), meaning)
-    for keys, meaning in KEYS:
+    for keys, meaning in keys:
         table.add_row(Text(keys, style=theme.MUTED), meaning)
     return table
 
@@ -659,6 +666,25 @@ class TrainSpinner:
 
 
 # ------------------------------------------------------------------ 5. Display
+
+
+def to_text(renderable, width):
+    """Draw any rich renderable (panel, table, group...) as styled Text, `width` columns wide.
+
+    The full-screen app shows its history as Text because Textual can only select
+    text with the mouse, not panels or tables. Colors and borders stay the same.
+    """
+    console = Console(width=width, force_terminal=True, color_system="truecolor",
+                      highlight=False, file=io.StringIO())
+    lines = console.render_lines(renderable, console.options.update_width(width), pad=False)
+    text = Text(no_wrap=True, overflow="crop", end="")
+    for number, line in enumerate(lines):
+        for segment in line:
+            if not segment.control:
+                text.append(segment.text, segment.style)
+        if number < len(lines) - 1:
+            text.append("\n")
+    return text
 
 
 def make_console(plain=False, **options):

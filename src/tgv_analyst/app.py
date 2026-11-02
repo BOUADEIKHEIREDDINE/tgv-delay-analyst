@@ -18,6 +18,9 @@ of ui.py (the same ones as the simple display). All colors come from theme.py.
 """
 
 import csv
+import os
+import shutil
+import subprocess
 import threading
 import time
 
@@ -61,6 +64,52 @@ def user_line(question):
     return Text.assemble((ui.PROMPT_MARK, f"bold {theme.ACCENT}"), question)
 
 
+# Tools that put text on the system clipboard, tried in this order.
+CLIPBOARD_COMMANDS = [
+    ["wl-copy"],  # Linux, Wayland (package wl-clipboard)
+    ["xclip", "-selection", "clipboard"],  # Linux, X11
+    ["xsel", "--clipboard", "--input"],
+    ["pbcopy"],  # macOS
+]
+COPIED = "Copied"
+# GNOME Terminal (VTE) ignores OSC 52, the code Textual uses to copy: a tool is needed.
+COPY_NEEDS_TOOL = "Copied inside the app only. To paste elsewhere: sudo apt install wl-clipboard"
+
+
+def copy_with_system_tool(text):
+    """Put `text` on the system clipboard with the first tool installed. False if there is none."""
+    for command in CLIPBOARD_COMMANDS:
+        if shutil.which(command[0]):
+            subprocess.run(command, input=text, text=True, timeout=5, check=False)
+            return True
+    return False
+
+
+class Block(Static):
+    """One block of the history (banner, question, tool call, answer...).
+
+    Panels and tables are drawn as styled Text at the current width (ui.to_text), so the
+    mouse can select them: Textual only selects text. Same look as a plain Static.
+    """
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.cache = (None, 0, None)  # (content, width, text): drawn again only if one changes
+
+    def as_text(self, width):
+        content, cached_width, text = self.cache
+        if content is not self.content or cached_width != width:
+            text = ui.to_text(self.content, width)
+            self.cache = (self.content, width, text)
+        return text
+
+    def render(self):
+        return self.as_text(self.content_region.width or self.app.size.width)
+
+    def get_content_height(self, container, viewport, width):
+        return len(self.as_text(width).split()) if width else 0
+
+
 class QuestionBox(TextArea):
     """The question box: Enter sends, \\ + Enter (or Shift+Enter) adds a new line.
 
@@ -91,6 +140,13 @@ class QuestionBox(TextArea):
                 self.post_message(self.Submitted(self.text))
             return
         await super()._on_key(event)
+
+    def action_copy(self):
+        """Ctrl+C: the box's own selection if there is one, else the text selected in the history."""
+        if self.selected_text:
+            super().action_copy()
+        else:
+            self.screen.action_copy_text()
 
     def action_paste(self):
         """Ctrl+V pastes the app's own clipboard (text copied inside the app). The system
@@ -199,7 +255,7 @@ class TgvApp(App):
         """
         history = self.query_one("#history")
         at_end = history.scroll_y >= history.max_scroll_y - 1
-        widget = Static(renderable, id=widget_id)
+        widget = Block(renderable, id=widget_id)
         history.mount(widget)
         if at_end:
             history.call_after_refresh(history.scroll_end, animate=False)
@@ -415,6 +471,17 @@ class TgvApp(App):
     def action_toggle_sidebar(self):
         self.query_one(Sidebar).toggle_class("-hidden")
 
+    def copy_to_clipboard(self, text):
+        """Ctrl+C on a selection. Textual copies with OSC 52 (most terminals) and keeps the
+        text for Ctrl+V in the app; a system tool also copies it (needed in GNOME Terminal)."""
+        super().copy_to_clipboard(text)
+        if not text:
+            return
+        if copy_with_system_tool(text) or not os.environ.get("VTE_VERSION"):
+            self.notify(COPIED, timeout=2)
+        else:
+            self.notify(COPY_NEEDS_TOOL, timeout=6)
+
     def on_sidebar_new_conversation(self, message):
         self.action_new_conversation()
 
@@ -434,7 +501,7 @@ class TgvApp(App):
         if command in QUIT_COMMANDS:
             self.exit()
         elif command == "/help":
-            self.add(ui.render_help())
+            self.add(ui.render_help(ui.APP_KEYS))
         elif command == "/trace":
             if not self.events:
                 self.add("No question yet.")

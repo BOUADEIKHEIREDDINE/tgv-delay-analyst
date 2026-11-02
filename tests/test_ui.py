@@ -10,6 +10,7 @@ from datetime import datetime
 
 import pytest
 from rich.console import Console
+from rich.text import Text
 
 from tgv_analyst import ui
 from tgv_analyst.config import EARLY_S, LATE_S
@@ -354,6 +355,26 @@ def test_data_limits_text():
 
 
 def test_help_lists_the_copy_and_paste_keys():
-    text = render(ui.render_help())
-    assert "shift + drag" in text and "ctrl+shift+c" in text
-    assert "ctrl+shift+v" in text
+    terminal = render(ui.render_help())  # line-by-line mode: the terminal's keys
+    assert "ctrl+shift+c" in terminal and "ctrl+shift+v" in terminal
+    app = render(ui.render_help(ui.APP_KEYS))  # full-screen app: the app selects and copies
+    assert "drag to the top or bottom edge to scroll" in app and "ctrl+c" in app
+
+
+def test_to_text_draws_a_panel_as_styled_text():
+    """The app's history is Text so the mouse can select it: same lines, same colors."""
+    from rich.panel import Panel
+
+    panel = Panel("9.5 % of trains were late", title="Answer", border_style=ui.theme.ACCENT)
+    text = ui.to_text(panel, 40)
+    lines = text.plain.split("\n")
+    assert len(lines) == 3  # top border, the line, bottom border
+    assert all(len(line) <= 40 for line in lines)
+    assert "Answer" in lines[0] and "9.5 % of trains were late" in lines[1]
+    assert text.spans  # the colors are kept
+
+
+def test_to_text_wraps_to_the_width():
+    text = ui.to_text(Text("word " * 20), 30)
+    assert all(len(line) <= 30 for line in text.plain.split("\n"))
+    assert len(text.plain.split("\n")) >= 3

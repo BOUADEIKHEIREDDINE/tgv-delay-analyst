@@ -62,8 +62,12 @@ tgv --simple                          # line-by-line mode in the normal terminal
 An answer takes about 30–90 s on the test laptop (model thinking on). The app shows
 each step: the code Qwen wrote, what it printed, the guard's verdict, and where each
 number of the answer comes from. `/trace` shows the last question in full, `/log` the
-data cleaning log. To copy text, hold **Shift** while selecting with the mouse,
-then Ctrl+Shift+C; to paste a question, Ctrl+Shift+V (the terminal's own keys).
+data cleaning log.
+
+Copy and paste in the app: drag with the mouse to select (drag to the top or bottom
+edge to scroll while selecting), **Ctrl+C** to copy; **Ctrl+Shift+V** pastes a question.
+GNOME Terminal ignores the copy code apps use, so install `wl-clipboard`
+(`sudo apt install wl-clipboard`) to paste the copied text outside the app.
 
 Questions to try:
 - *Quel est le taux de retard à l'arrivée de Paris Lyon vers Marseille St Charles en 2024 ?*
@@ -76,7 +80,7 @@ Questions to try:
 python -m pytest
 ```
 
-276 tests, about 15 s. They need neither the model nor the downloaded data: the model
+283 tests, about 15 s. They need neither the model nor the downloaded data: the model
 is replaced by a fake that replays real Qwen replies, and the data by small files in
 `tests/fixtures/`.
 

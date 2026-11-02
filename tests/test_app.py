@@ -11,6 +11,7 @@ import time
 from pathlib import Path
 
 from rich.console import Console
+from rich.text import Text
 
 from tgv_analyst import ui
 from tgv_analyst.app import QuestionBox, TgvApp
@@ -285,4 +286,71 @@ def test_terminal_paste_goes_into_the_question_box():
         app.post_message(events.Paste("Taux de retard 2024 ?"))  # like the terminal: to the app
         await pilot.pause()
         assert box.text == "Taux de retard 2024 ?"
+    run(scenario)
+
+
+def test_history_blocks_can_be_selected_with_the_mouse():
+    """Textual only selects text: every history block is drawn as Text (Block, ui.to_text)."""
+    from textual.selection import Selection
+
+    from tgv_analyst.app import Block
+
+    async def scenario(app, pilot):
+        app.query_one(QuestionBox).insert("How many rows?")
+        await pilot.press("enter")
+        await wait_for(pilot, lambda: not app.busy and "verified answer" in history_text(app))
+        blocks = list(app.query_one("#history").query(Block))
+        assert blocks and all(isinstance(block.render(), Text) for block in blocks)
+        selected = "".join(block.get_selection(Selection(None, None))[0] for block in blocks)
+        assert "How many rows?" in selected and "12792" in selected
+    run(scenario)
+
+
+def test_drag_selects_and_ctrl_c_copies(monkeypatch):
+    """Drag over the history, then Ctrl+C (the question box has the focus): the selection is copied."""
+    copied = []
+
+    async def scenario(app, pilot):
+        monkeypatch.setattr(app, "copy_to_clipboard", copied.append)
+        banner = app.query_one("#banner")
+        await pilot.mouse_down(banner, offset=(0, 0))
+        await pilot.hover(banner, offset=(30, 3))
+        await pilot.mouse_up(banner, offset=(30, 3))
+        await pilot.pause()
+        assert app.screen.get_selected_text()  # something is selected
+        await pilot.press("ctrl+c")
+        assert copied and copied[0] == app.screen.get_selected_text()
+    run(scenario)
+
+
+def test_copy_uses_the_system_clipboard_tool(monkeypatch):
+    from tgv_analyst import app as app_module
+
+    calls = []
+    monkeypatch.setattr(app_module.shutil, "which", lambda name: "/usr/bin/wl-copy" if name == "wl-copy" else None)
+    monkeypatch.setattr(app_module.subprocess, "run", lambda command, **kwargs: calls.append((command, kwargs["input"])))
+    assert app_module.copy_with_system_tool("9.5 %") is True
+    assert calls == [(["wl-copy"], "9.5 %")]
+
+
+def test_copy_without_any_tool(monkeypatch):
+    from tgv_analyst import app as app_module
+
+    monkeypatch.setattr(app_module.shutil, "which", lambda name: None)
+    assert app_module.copy_with_system_tool("9.5 %") is False
+
+
+def test_copy_in_gnome_terminal_without_a_tool_says_what_to_install(monkeypatch):
+    """GNOME Terminal ignores OSC 52: tell the user how to copy outside the app."""
+    from tgv_analyst import app as app_module
+
+    notices = []
+    monkeypatch.setattr(app_module, "copy_with_system_tool", lambda text: False)
+    monkeypatch.setenv("VTE_VERSION", "7600")
+
+    async def scenario(app, pilot):
+        monkeypatch.setattr(app, "notify", lambda message, **kwargs: notices.append(message))
+        app.copy_to_clipboard("9.5 %")
+        assert notices == [app_module.COPY_NEEDS_TOOL]
+        assert app.clipboard == "9.5 %"  # still pastable inside the app with Ctrl+V
     run(scenario)

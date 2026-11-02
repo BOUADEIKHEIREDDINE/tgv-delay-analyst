@@ -23,7 +23,7 @@ STARTERS = [
     "Which route had the most delays in 2025?",
     "Main causes of delays in 2024?",
 ]
-SHORTCUTS = "ctrl+n new · ctrl+b hide\nshift+drag select · ctrl+shift+v paste"
+SHORTCUTS = "ctrl+n new · ctrl+b hide\ndrag select · ctrl+c copy"
 
 
 def section(title):
