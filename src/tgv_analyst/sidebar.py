@@ -10,7 +10,7 @@ from datetime import datetime
 from rich.text import Text
 from textual.containers import VerticalScroll
 from textual.message import Message
-from textual.widgets import OptionList, Static
+from textual.widgets import OptionList, Rule, Static
 from textual.widgets.option_list import Option
 
 from tgv_analyst import theme, ui
@@ -69,11 +69,14 @@ class Sidebar(VerticalScroll):
 
     def compose(self):
         yield Static(id="session")
+        yield Rule()  # thin line between sections (style in app.py CSS)
         yield section("CONVERSATIONS")
         yield OptionList(id="conversations")
+        yield Rule()
         yield section("TRY")
         starters = [Option(Text.assemble(("› ", theme.ACCENT), q), id=str(i)) for i, q in enumerate(STARTERS)]
         yield OptionList(*starters, id="starters")
+        yield Rule()
         yield Static(Text(SHORTCUTS, style=theme.MUTED), classes="section")
 
     def show_session(self, status, think):

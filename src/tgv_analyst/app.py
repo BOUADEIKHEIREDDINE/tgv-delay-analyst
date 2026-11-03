@@ -169,6 +169,7 @@ class TgvApp(App):
     }}
     Sidebar.-hidden {{ display: none; }}
     Sidebar .section {{ margin-top: 1; }}
+    Sidebar Rule {{ color: {theme.MUTED}; margin: 1 0 0 0; }}
     Sidebar OptionList {{ height: auto; max-height: 14; border: none; padding: 0; background: ansi_default; }}
     Sidebar OptionList:focus {{ border: none; }}
     Sidebar OptionList > .option-list--option-highlighted {{
